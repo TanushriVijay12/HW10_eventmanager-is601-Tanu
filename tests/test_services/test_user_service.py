@@ -1,5 +1,7 @@
 from builtins import range
 import pytest
+from unittest.mock import patch
+from tests.dummy_smtp import DummySMTP
 from sqlalchemy import select
 from app.dependencies import get_settings
 from app.models.user_model import User
@@ -13,7 +15,9 @@ async def test_create_user_with_valid_data(db_session, email_service):
         "email": "valid_user@example.com",
         "password": "ValidPassword123!",
     }
-    user = await UserService.create(db_session, user_data, email_service)
+     # Patch the SMTP class so the email sending uses DummySMTP.
+    with patch("smtplib.SMTP", new=DummySMTP):
+        user = await UserService.create(db_session, user_data, email_service)
     assert user is not None
     assert user.email == user_data["email"]
 
@@ -95,7 +99,8 @@ async def test_register_user_with_valid_data(db_session, email_service):
         "email": "register_valid_user@example.com",
         "password": "RegisterValid123!",
     }
-    user = await UserService.register_user(db_session, user_data, email_service)
+    with patch("smtplib.SMTP", new=DummySMTP):
+        user = await UserService.register_user(db_session, user_data, email_service)
     assert user is not None
     assert user.email == user_data["email"]
 

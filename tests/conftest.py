@@ -271,14 +271,15 @@ from app.services.jwt_service import create_access_token
 @pytest.fixture
 def user_token(user):
     # Generate a token for a generic user
-    return create_access_token(data={"sub": user.email})
+    return create_access_token(data={"sub": user.email, "role": user.role.value})
 
 @pytest.fixture
 def admin_token(admin_user):
     # Generate a token for the admin user
-    return create_access_token(data={"sub": admin_user.email})
+    return create_access_token(data={"sub": admin_user.email, "role": admin_user.role.value})
 
 @pytest.fixture
 def manager_token(manager_user):
     # Generate a token for the manager user
-    return create_access_token(data={"sub": manager_user.email})
+    return create_access_token(data={"sub": manager_user.email, "role": manager_user.role.value})
+
